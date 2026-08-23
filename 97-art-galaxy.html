@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>97 Art Galaxy — Living Visual Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#030309;
+    --card:#0d0b14;
+    --gold:#f7d98b;
+    --muted:rgba(253,243,228,0.6);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;background:var(--void);color:#fdf3e4;
+    font-family:'Poppins',sans-serif;overflow-x:hidden;}
+  h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;margin:0;}
+  a{text-decoration:none;color:inherit;}
+  .container{width:min(1200px,calc(100% - 40px));margin:0 auto;}
+
+  #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+  /* ===== HERO ===== */
+  .hero{
+    min-height:70vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:80px 24px 40px;position:relative;z-index:2;
+  }
+  .hero-eyebrow{
+    text-transform:uppercase;letter-spacing:0.2em;font-size:0.72rem;
+    color:var(--gold);margin-bottom:18px;font-family:'Poppins',sans-serif;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem,7vw,5rem);letter-spacing:-0.02em;line-height:1;
+  }
+  .hero .tagline{
+    font-style:italic;font-size:1.2rem;color:var(--muted);margin-top:16px;
+  }
+  .hero p{
+    max-width:520px;margin:20px auto 0;color:var(--muted);font-size:1rem;line-height:1.7;
+  }
+  .explore-btn{
+    margin-top:34px;padding:14px 34px;border-radius:999px;
+    border:1px solid rgba(247,217,139,0.4);color:var(--gold);
+    font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;
+    cursor:pointer;background:rgba(247,217,139,0.05);
+    transition:all .3s ease;
+  }
+  .explore-btn:hover{background:rgba(247,217,139,0.12);transform:translateY(-2px);}
+
+  /* ===== CATEGORY FILTER ===== */
+  .filters{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+    padding:0 24px 50px;position:relative;z-index:2;
+  }
+  .filter-btn{
+    padding:8px 20px;border-radius:999px;font-size:0.78rem;
+    letter-spacing:0.06em;text-transform:uppercase;
+    border:1px solid rgba(255,255,255,0.15);color:var(--muted);
+    cursor:pointer;background:transparent;transition:all .3s ease;
+  }
+  .filter-btn.active,.filter-btn:hover{
+    border-color:var(--gold);color:var(--gold);background:rgba(247,217,139,0.08);
+  }
+
+  /* ===== LIVING GALLERY ROWS ===== */
+  .gallery{position:relative;z-index:2;padding:20px 0 60px;}
+  .row-wrap{margin-bottom:34px;}
+  .row-label{
+    font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--muted);padding:0 24px;margin-bottom:10px;
+  }
+  .row-track-outer{overflow:hidden;width:100%;}
+  .row-track{
+    display:flex;gap:16px;width:max-content;
+    animation-timing-function:linear;animation-iteration-count:infinite;
+  }
+  .row-track.paused{animation-play-state:paused;}
+  .row-1 .row-track{animation-name:scrollLeft;animation-duration:60s;}
+  .row-2 .row-track{animation-name:scrollRight;animation-duration:48s;}
+  .row-3 .row-track{animation-name:scrollLeft;animation-duration:70s;}
+  .row-4 .row-track{animation-name:scrollRight;animation-duration:80s;}
+  @keyframes scrollLeft{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+  @keyframes scrollRight{
+    from{transform:translateX(-50%);}
+    to{transform:translateX(0);}
+  }
+  .gallery-item{
+    flex:0 0 auto;width:240px;height:170px;border-radius:14px;
+    overflow:hidden;cursor:pointer;position:relative;
+    background:var(--card);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    transition:transform .4s ease;
+  }
+  .gallery-item:hover{transform:translateY(-6px) scale(1.02);}
+  .gallery-item img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+  .gallery-item .item-tag{
+    position:absolute;bottom:8px;left:10px;
+    font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;
+    color:#fff;background:rgba(0,0,0,0.5);padding:4px 10px;border-radius:999px;
+    opacity:0;transition:opacity .3s ease;
+  }
+  .gallery-item:hover .item-tag{opacity:1;}
+
+  .row-wrap.dimmed{opacity:0.15;filter:blur(1px);pointer-events:none;}
+
+  /* ===== PROJECT MODAL ===== */
+  .modal{
+    position:fixed;inset:0;background:rgba(3,3,9,0.94);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;z-index:1000;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .35s ease,visibility .35s ease;
+  }
+  .modal.show{opacity:1;visibility:visible;pointer-events:auto;}
+  .modal-content{
+    background:var(--card);border-radius:22px;max-width:720px;width:100%;
+    max-height:88vh;overflow-y:auto;padding:36px;position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .modal-close{
+    position:absolute;top:18px;right:18px;width:38px;height:38px;
+    border-radius:50%;background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.2);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:1.2rem;
+  }
+  .modal-tag{
+    font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:10px;
+  }
+  .modal-content h2{font-family:'Poppins',sans-serif;font-weight:600;font-size:1.7rem;margin-bottom:6px;}
+  .modal-subtitle{color:var(--muted);font-size:0.95rem;margin-bottom:22px;}
+  .modal-block-label{
+    font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--gold);margin:22px 0 8px;
+  }
+  .modal-content p.body{color:rgba(253,243,228,0.78);line-height:1.75;font-size:0.98rem;}
+  .modal-gallery{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;
+  }
+  .modal-gallery img{
+    width:100%;height:90px;object-fit:cover;border-radius:10px;
+  }
+  .modal-visit{
+    display:inline-block;margin-top:26px;background:var(--gold);color:#1a1305;
+    padding:12px 28px;border-radius:999px;font-weight:600;font-size:0.9rem;
+  }
+
+  /* ===== BOTTOM SECTION ===== */
+  .bottom{
+    position:relative;z-index:2;text-align:center;padding:100px 24px;
+  }
+  .bottom h2{font-size:clamp(1.8rem,4.5vw,3rem);margin-bottom:16px;}
+  .bottom p.lede{color:var(--muted);max-width:520px;margin:0 auto 34px;}
+  .skills-row{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:44px;
+  }
+  .skill-pill{
+    padding:8px 18px;border-radius:999px;font-size:0.78rem;
+    border:1px solid rgba(255,255,255,0.15);color:var(--muted);
+  }
+  .bottom-cta{color:var(--muted);margin-bottom:16px;font-size:1rem;}
+  .bottom .explore-btn{display:inline-block;}
+
+  @media (max-width:640px){
+    .gallery-item{width:180px;height:130px;}
+    .modal-gallery{grid-template-columns:repeat(2,1fr);}
+  }
+
+  /* ===== REDUCED MOTION ===== */
+  @media (prefers-reduced-motion: reduce){
+    .row-track{animation:none !important;}
+    .row-track-outer{overflow-x:auto;}
+    .gallery-item{scroll-snap-align:start;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-eyebrow">97 Creative Management</div>
+  <h1>97 Art Galaxy</h1>
+  <p class="tagline">Ideas become visible here.</p>
+  <p>Visual identity, graphic design, storytelling and digital experiences created to bring ideas into form.</p>
+  <button class="explore-btn" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">Explore the Work</button>
+</section>
+
+<!-- ===== CATEGORY FILTERS ===== -->
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="identity">Identity</button>
+  <button class="filter-btn" data-filter="storytelling">Graphics</button>
+  <button class="filter-btn" data-filter="digital">Digital</button>
+  <button class="filter-btn" data-filter="worlds">Worlds</button>
+</div>
+
+<!-- ===== LIVING GALLERY ===== -->
+<div class="gallery" id="gallery">
+
+  <div class="row-wrap" data-category="identity">
+    <div class="row-label">Identity</div>
+    <div class="row-track-outer">
+      <div class="row-track row-1-track" id="row-identity"></div>
+    </div>
+  </div>
+
+  <div class="row-wrap" data-category="storytelling">
+    <div class="row-label">Story</div>
+    <div class="row-track-outer">
+      <div class="row-track row-2-track" id="row-storytelling"></div>
+    </div>
+  </div>
+
+  <div class="row-wrap" data-category="digital">
+    <div class="row-label">Experience</div>
+    <div class="row-track-outer">
+      <div class="row-track row-3-track" id="row-digital"></div>
+    </div>
+  </div>
+
+  <div class="row-wrap" data-category="worlds">
+    <div class="row-label">Worlds</div>
+    <div class="row-track-outer">
+      <div class="row-track row-4-track" id="row-worlds"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== BOTTOM SECTION ===== -->
+<div class="bottom">
+  <h2>More than graphics.</h2>
+  <p class="lede">Every project begins with an idea that needs a form.</p>
+  <div class="skills-row">
+    <span class="skill-pill">Visual Identity</span>
+    <span class="skill-pill">Graphic Design</span>
+    <span class="skill-pill">Visual Storytelling</span>
+    <span class="skill-pill">Digital Experiences</span>
+    <span class="skill-pill">Creative Direction</span>
+  </div>
+  <p class="bottom-cta">Have an idea that needs to become visible?</p>
+  <a href="contact.html" class="explore-btn">Explore More</a>
+</div>
+
+<!-- ===== PROJECT MODAL ===== -->
+<div class="modal" id="projectModal">
+  <div class="modal-content">
+    <div class="modal-close" onclick="closeModal()">×</div>
+    <div class="modal-tag" id="modalCategory"></div>
+    <h2 id="modalTitle"></h2>
+    <p class="modal-subtitle" id="modalSubtitle"></p>
+
+    <div class="modal-block-label">Role</div>
+    <p class="body" id="modalRole"></p>
+
+    <div class="modal-block-label">The Vision</div>
+    <p class="body" id="modalVision"></p>
+
+    <div class="modal-block-label">The Work</div>
+    <div class="modal-gallery" id="modalGallery"></div>
+
+    <a href="#" id="modalVisit" class="modal-visit" target="_self">View Project →</a>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   PROJECT DATA — the single source of truth for the whole gallery.
+   To add a new project: put its images in assets/[project-id]/
+   and add ONE object below. Nothing else needs to change.
+   category options: "identity" | "storytelling" | "digital" | "worlds"
+================================================================= */
+const PROJECTS = [
+  {
+    id: "world-within",
+    title: "World Within",
+    category: "worlds",
+    subtitle: "Neurodivergent-Centered Digital Experience",
+    role: "Concept · UX · Visual Design · Web Experience",
+    vision: "A digital experience designed around emotional accessibility — allowing people to reflect and express themselves before ever being asked to provide information. Built from lived neurodivergent experience, not theory about it.",
+    images: [
+      "assets/world-within/logo.png",
+      "assets/world-within/banner.png",
+      "assets/world-within/journey.png",
+      "assets/world-within/interface.png"
+    ],
+    url: "https://egentspirit-collab.github.io/world-within/index.html"
+  },
+  {
+    id: "bite-by-bytes",
+    title: "Bite by Bytes",
+    category: "worlds",
+    subtitle: "A Movement in the Making",
+    role: "Brand Identity · Story Design · Web Experience",
+    vision: "Small effort, real growth — a platform helping young people turn daily action into real earnings, skills, and independence, one byte at a time.",
+    images: [
+      "assets/bite-by-bytes/logo.png",
+      "assets/bite-by-bytes/flyer.png",
+      "assets/bite-by-bytes/story-frame.png"
+    ],
+    url: "https://mazienx.github.io/D7xMight/Bite%20by%20Bytes/bitebybytes.html"
+  }
+  /* Add more identity / storytelling / digital projects here,
+     following the same shape as above. */
+];
+
+/* =================================================================
+   BUILD ROWS — flattens each project's images into its row,
+   tagging every image with its parent project id
+================================================================= */
+const rowMap = {
+  identity: document.getElementById('row-identity'),
+  storytelling: document.getElementById('row-storytelling'),
+  digital: document.getElementById('row-digital'),
+  worlds: document.getElementById('row-worlds')
+};
+
+function buildRows(){
+  Object.keys(rowMap).forEach(cat => {
+    const track = rowMap[cat];
+    const items = [];
+    PROJECTS.filter(p => p.category === cat).forEach(project => {
+      project.images.forEach(imgSrc => {
+        items.push({ src: imgSrc, projectId: project.id, title: project.title });
+      });
+    });
+
+    // If a category has no work yet, leave it visually quiet
+    if (items.length === 0) {
+      track.parentElement.parentElement.style.display = 'none';
+      return;
+    }
+
+    // Duplicate the set once for a seamless infinite scroll loop
+    const doubled = items.concat(items);
+    track.innerHTML = doubled.map(item => `
+      <div class="gallery-item" onclick="openProject('${item.projectId}')">
+        <img src="${item.src}" alt="${item.title}" loading="lazy">
+        <span class="item-tag">${item.title}</span>
+      </div>
+    `).join('');
+  });
+}
+buildRows();
+
+/* =================================================================
+   PROJECT MODAL — clicking any image opens the full case study,
+   not just a bigger version of that one image
+================================================================= */
+function openProject(id){
+  const project = PROJECTS.find(p => p.id === id);
+  if (!project) return;
+
+  document.getElementById('modalCategory').textContent = project.category.toUpperCase();
+  document.getElementById('modalTitle').textContent = project.title;
+  document.getElementById('modalSubtitle').textContent = project.subtitle;
+  document.getElementById('modalRole').textContent = project.role;
+  document.getElementById('modalVision').textContent = project.vision;
+
+  document.getElementById('modalGallery').innerHTML = project.images.map(src =>
+    `<img src="${src}" alt="${project.title}" loading="lazy">`
+  ).join('');
+
+  const visitBtn = document.getElementById('modalVisit');
+  if (project.url) {
+    visitBtn.style.display = 'inline-block';
+    visitBtn.href = project.url;
+    visitBtn.textContent = `View ${project.title} →`;
+  } else {
+    visitBtn.style.display = 'none';
+  }
+
+  document.getElementById('projectModal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('projectModal').classList.remove('show');
+}
+
+/* =================================================================
+   CATEGORY FILTER — dims non-matching rows, doesn't remove them
+================================================================= */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+
+    document.querySelectorAll('.row-wrap').forEach(row => {
+      if (filter === 'all' || row.dataset.category === filter) {
+        row.classList.remove('dimmed');
+      } else {
+        row.classList.add('dimmed');
+      }
+    });
+  });
+});
+
+/* =================================================================
+   PAUSE ON HOVER / TOUCH — gives the visitor control
+================================================================= */
+document.querySelectorAll('.row-track').forEach(track => {
+  track.addEventListener('mouseenter', () => track.classList.add('paused'));
+  track.addEventListener('mouseleave', () => track.classList.remove('paused'));
+  track.addEventListener('touchstart', () => track.classList.add('paused'), {passive:true});
+});
+
+/* =================================================================
+   PARTICLES — sparse, slow, atmosphere only, never accumulating
+================================================================= */
+(function(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = window.innerWidth; canvas.height = document.body.scrollHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) { canvas.style.display = 'none'; }
+  else {
+    const MAX = 30;
+    let particles = [];
+    function spawn(){
+      if (particles.length >= MAX) return;
+      particles.push({
+        x: Math.random()*canvas.width,
+        y: canvas.height + 10,
+        size: Math.random()*1.8 + 0.8,
+        speed: Math.random()*0.3 + 0.1,
+        life: 0,
+        maxLife: Math.random()*500 + 400
+      });
+    }
+    for (let i=0;i<MAX;i++) spawn();
+
+    function tick(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        p.y -= p.speed;
+        p.life++;
+        const fadeIn = Math.min(p.life/80,1);
+        const fadeOut = Math.max(0, 1 - Math.max(0,(p.life-(p.maxLife-80))/80));
+        const opacity = Math.min(fadeIn,fadeOut) * 0.5;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fillStyle = `rgba(247,217,139,${opacity})`;
+        ctx.fill();
+        if (p.life > p.maxLife || p.y < -10){
+          p.x = Math.random()*canvas.width;
+          p.y = canvas.height + 10;
+          p.life = 0;
+          p.maxLife = Math.random()*500 + 400;
+        }
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  }
+})();
+</script>
+
+</body>
+</html>
